@@ -83,5 +83,45 @@ export const authService = {
     db.logs.add(user.id, 'ACCOUNT_CREATED', { companyId: company.id });
     
     return { success: true, user };
+  },
+
+  /**
+   * Social Login (Mock)
+   */
+  async socialLogin(provider, socialData) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const { email, name } = socialData;
+    const existingUser = db.users.find(email);
+    
+    if (existingUser) {
+      db.logs.add(existingUser.id, 'SOCIAL_LOGIN_SUCCESS', { provider });
+      return { success: true, user: existingUser, isNewUser: false };
+    }
+    
+    // For new users via social, we need company info and confirmation
+    return { success: true, isNewUser: true, socialData: { email, name, provider } };
+  },
+
+  /**
+   * Complete Social Registration
+   */
+  async completeSocialSignup(socialData, companyName) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const { email, name, provider } = socialData;
+    const company = db.companies.create({ name: companyName });
+    const user = db.users.create({ 
+      email, 
+      name,
+      companyId: company.id,
+      role: 'admin',
+      provider: provider,
+      authMethod: 'social'
+    });
+
+    db.logs.add(user.id, 'SOCIAL_ACCOUNT_CREATED', { companyId: company.id, provider });
+    
+    return { success: true, user };
   }
 };

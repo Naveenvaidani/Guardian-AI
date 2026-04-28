@@ -7,7 +7,26 @@ const STORAGE_KEY = 'guardian_db_mock';
 
 const getDB = () => {
   const db = localStorage.getItem(STORAGE_KEY);
-  return db ? JSON.parse(db) : { users: [], companies: [], logs: [] };
+  if (db) return JSON.parse(db);
+  
+  // Initial Mock Data
+  const initialData = { 
+    users: [
+      {
+        id: 'user_1',
+        email: 'naveen@example.com',
+        name: 'Naveen Vaidani',
+        companyId: 'comp_1',
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      }
+    ], 
+    companies: [
+      { id: 'comp_1', name: 'Guardian AI Core Team', createdAt: new Date().toISOString() }
+    ], 
+    logs: [] 
+  };
+  return initialData;
 };
 
 const saveDB = (db) => {

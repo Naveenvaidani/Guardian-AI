@@ -22,7 +22,7 @@ const AppleIcon = () => (
 );
 
 export default function AuthModal({ isOpen, onClose, onLogin }) {
-  const [step, setStep] = useState('identify'); // identify, password, 2fa, register, forgot_password
+  const [step, setStep] = useState('identify'); // identify, password, 2fa, register, forgot_password, social_picker, social_signup
   const [mode, setMode] = useState('login'); // login, signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,6 +32,8 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [socialData, setSocialData] = useState(null);
+  const [activeProvider, setActiveProvider] = useState(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -147,6 +149,60 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
     }
   };
 
+  const handleSocialSelect = async (provider) => {
+    setActiveProvider(provider);
+    setStep('social_picker');
+  };
+
+  const mockSocialAccounts = [
+    { name: 'Naveen Vaidani', email: 'naveen@example.com', avatar: 'N' },
+    { name: 'Developer Account', email: 'dev@guardian-ai.com', avatar: 'D' },
+  ];
+
+  const handleSocialAccountClick = async (account) => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await authService.socialLogin(activeProvider, account);
+      if (result.isNewUser) {
+        setSocialData(result.socialData);
+        setStep('social_signup');
+      } else {
+        setSuccess(`Welcome back, ${result.user.name}!`);
+        setTimeout(() => {
+          onLogin(result.user);
+        }, 1000);
+      }
+    } catch (err) {
+      setError('Social login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialSignupSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await authService.completeSocialSignup(socialData, company);
+      if (result.success) {
+        setSuccess('Profile completed successfully!');
+        setTimeout(() => {
+          onLogin(result.user);
+        }, 1000);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('Failed to complete profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerify2FA = async (e) => {
     if (e) e.preventDefault();
     const code = otp.join('');
@@ -249,11 +305,17 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
                       </p>
                       
                       <div className="grid grid-cols-1 gap-3 md:gap-4">
-                        <button className="flex w-full items-center justify-center gap-3 rounded-xl md:rounded-2xl border border-guardian-border bg-white px-4 py-3 md:py-4 font-bold text-guardian-navy transition-all hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]">
+                        <button 
+                          onClick={() => handleSocialSelect('google')}
+                          className="flex w-full items-center justify-center gap-3 rounded-xl md:rounded-2xl border border-guardian-border bg-white px-4 py-3 md:py-4 font-bold text-guardian-navy transition-all hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]"
+                        >
                           <GoogleIcon />
                           <span className="text-sm md:text-base">{mode === 'login' ? 'Continue' : 'Sign up'} with Google</span>
                         </button>
-                        <button className="flex w-full items-center justify-center gap-3 rounded-xl md:rounded-2xl bg-guardian-navy px-4 py-3 md:py-4 font-bold text-white transition-all hover:bg-[#0F2A4D] hover:shadow-lg active:scale-[0.98]">
+                        <button 
+                          onClick={() => handleSocialSelect('apple')}
+                          className="flex w-full items-center justify-center gap-3 rounded-xl md:rounded-2xl bg-guardian-navy px-4 py-3 md:py-4 font-bold text-white transition-all hover:bg-[#0F2A4D] hover:shadow-lg active:scale-[0.98]"
+                        >
                           <AppleIcon />
                           <span className="text-sm md:text-base">{mode === 'login' ? 'Continue' : 'Sign up'} with Apple</span>
                         </button>
@@ -427,6 +489,86 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
                       <p className="mt-6 md:mt-8 text-center text-[10px] md:text-xs text-guardian-secondary">
                         Didn't receive a code? <button className="font-bold text-guardian-blue hover:underline">Resend code</button>
                       </p>
+                    </motion.div>
+                  )}
+
+                  {step === 'social_picker' && (
+                    <motion.div key="social_picker" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}>
+                      <h2 className="text-xl md:text-2xl font-bold text-guardian-navy text-center mb-2 uppercase tracking-tight">Choose an account</h2>
+                      <p className="text-guardian-secondary text-center mb-6 md:mb-8 text-xs md:text-sm">to continue to <span className="font-bold text-guardian-navy">Guardian AI</span></p>
+                      
+                      <div className="space-y-3">
+                        {mockSocialAccounts.map((account) => (
+                          <button
+                            key={account.email}
+                            onClick={() => handleSocialAccountClick(account)}
+                            className="flex w-full items-center gap-4 p-4 rounded-2xl border border-guardian-border hover:bg-guardian-section transition-all group"
+                          >
+                            <div className="h-10 w-10 rounded-full bg-guardian-navy text-white flex items-center justify-center font-bold text-sm">
+                              {account.avatar}
+                            </div>
+                            <div className="flex flex-col items-start">
+                              <span className="text-sm font-bold text-guardian-navy group-hover:text-guardian-blue transition-colors">{account.name}</span>
+                              <span className="text-xs text-guardian-secondary">{account.email}</span>
+                            </div>
+                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                              <ArrowRight className="h-4 w-4 text-guardian-blue" />
+                            </div>
+                          </button>
+                        ))}
+                        
+                        <button className="flex w-full items-center gap-4 p-4 rounded-2xl border border-dashed border-guardian-border hover:bg-guardian-section transition-all group mt-4">
+                          <div className="h-10 w-10 rounded-full border border-guardian-border flex items-center justify-center text-guardian-secondary">
+                            <X className="h-4 w-4" />
+                          </div>
+                          <span className="text-sm font-bold text-guardian-secondary">Use another account</span>
+                        </button>
+                      </div>
+                      
+                      <p className="mt-8 text-[10px] text-guardian-secondary text-center leading-relaxed">
+                        To continue, {activeProvider === 'google' ? 'Google' : 'Apple'} will share your name, email address, and profile picture with Guardian AI.
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {step === 'social_signup' && (
+                    <motion.div key="social_signup" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}>
+                      <div className="flex justify-center mb-6">
+                        <div className="h-16 w-16 rounded-full bg-guardian-blue/10 flex items-center justify-center">
+                          <CheckCircle2 className="h-8 w-8 text-guardian-blue" />
+                        </div>
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-bold text-guardian-navy text-center mb-2">Almost there, {socialData?.name.split(' ')[0]}</h2>
+                      <p className="text-guardian-secondary text-center mb-8 text-xs md:text-sm">Complete your enterprise profile to start using Guardian AI</p>
+                      
+                      <form onSubmit={handleSocialSignupSubmit} className="space-y-6">
+                        <div className="relative group">
+                          <Building className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-guardian-secondary group-focus-within:text-guardian-blue transition-colors" />
+                          <input
+                            type="text"
+                            placeholder="Organization Name"
+                            className="w-full rounded-xl md:rounded-2xl border border-guardian-border bg-guardian-section pl-12 pr-4 py-3 md:py-4 text-sm md:text-base text-guardian-navy font-medium focus:border-guardian-blue focus:ring-4 focus:ring-guardian-blue/5 outline-none transition-all"
+                            value={company}
+                            onChange={(e) => setCompany(e.target.value)}
+                            required
+                            autoFocus
+                          />
+                        </div>
+                        
+                        <div className="flex items-center gap-3 p-4 bg-guardian-section rounded-2xl border border-guardian-border">
+                          <div className="h-8 w-8 rounded-full bg-guardian-navy/10 flex items-center justify-center text-xs font-bold text-guardian-navy">
+                            {activeProvider === 'google' ? 'G' : 'A'}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-guardian-navy">Linked Email</span>
+                            <span className="text-[10px] text-guardian-secondary">{socialData?.email}</span>
+                          </div>
+                        </div>
+
+                        <button disabled={loading} className="w-full rounded-xl md:rounded-2xl bg-guardian-blue px-4 py-3 md:py-4 font-bold text-white transition-all hover:bg-blue-700 hover:shadow-lg disabled:opacity-50">
+                          <span className="text-sm md:text-base">{loading ? 'Finalizing...' : 'Get Started'}</span>
+                        </button>
+                      </form>
                     </motion.div>
                   )}
                 </AnimatePresence>
