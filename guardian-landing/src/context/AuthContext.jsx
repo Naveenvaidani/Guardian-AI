@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../services/auth';
 
 const AuthContext = createContext(null);
 
@@ -7,28 +8,35 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('guardian_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // Check for existing session from backend
+    const checkSession = async () => {
+      try {
+        const result = await authService.getSession();
+        if (result.success) {
+          setUser(result.user);
+        }
+      } catch (error) {
+        console.error('Session check failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('guardian_user', JSON.stringify(userData));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
-    localStorage.removeItem('guardian_user');
   };
 
   const updateProfile = (updates) => {
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
-    localStorage.setItem('guardian_user', JSON.stringify(updatedUser));
   };
 
   return (

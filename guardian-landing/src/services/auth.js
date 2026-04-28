@@ -1,127 +1,125 @@
-import { db } from './db';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/auth';
+
+// Configure axios to send credentials (cookies)
+axios.defaults.withCredentials = true;
+
+// Add a response interceptor to handle token refresh
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // If error is 401 and not already retrying and not the refresh request itself
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/refresh')) {
+      originalRequest._retry = true;
+      
+      // Attempt to refresh token
+      const success = await authService.refreshToken();
+      if (success) {
+        // Retry the original request
+        return axios(originalRequest);
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 /**
  * Authentication Service
- * Handles login, registration, and 2FA verification.
+ * Handles Google, Apple, and session management via Backend API.
  */
-
-// Simulated 2FA Code (In real mail, this would be generated and sent via SMTP/SendGrid)
-let current2FACode = "123456"; 
 
 export const authService = {
   /**
-   * Step 1: Identity Check
+   * Google Sign-In Callback
    */
-  async identify(email) {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const user = db.users.find(email);
-    return { exists: !!user, email };
-  },
-
-  /**
-   * Step 2: Credential Verification
-   */
-  async verifyCredentials(email, password) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const user = db.users.find(email);
-    
-    // In a real app, use bcrypt to compare hashes
-    if (user && user.password === password) {
-      // Generate a new 2FA code
-      current2FACode = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      // LOGIC FOR REAL MAIL:
-      // if (process.env.SENDGRID_API_KEY) {
-      //   await sendEmail(email, "Your 2FA Code", `Your code is ${current2FACode}`);
-      // }
-      
-      console.log(`[SECURITY] 2FA Code for ${email}: ${current2FACode}`); // For dev testing
-      
-      return { success: true, user };
+  async googleCallback(code, codeVerifier) {
+    try {
+      const response = await axios.post(`${API_URL}/google/callback`, { code, codeVerifier });
+      return { success: true, user: response.data.user };
+    } catch (error) {
+      console.error('Google callback error:', error);
+      return { success: false, error: error.response?.data?.error || 'Google authentication failed' };
     }
-    
-    return { success: false, error: 'Invalid credentials' };
   },
 
   /**
-   * Step 3: 2FA Verification
+   * Apple Sign-In Callback
    */
-  async verify2FA(email, code) {
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    if (code === current2FACode || code === "123456") { // 123456 is a fallback for demo
-      const user = db.users.find(email);
-      db.logs.add(user.id, 'LOGIN_SUCCESS', { method: 'email_password' });
-      return { success: true, user };
+  async appleCallback(authData) {
+    try {
+      const response = await axios.post(`${API_URL}/apple/callback`, authData);
+      return { success: true, user: response.data.user };
+    } catch (error) {
+      console.error('Apple callback error:', error);
+      return { success: false, error: error.response?.data?.error || 'Apple authentication failed' };
     }
-    
-    return { success: false, error: 'Invalid verification code' };
   },
 
   /**
-   * Registration
+   * Get Current Session
    */
-  async signUp(email, password, companyName) {
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
-    if (db.users.find(email)) {
-      return { success: false, error: 'User already exists' };
+  async getSession() {
+    try {
+      const response = await axios.get(`${API_URL}/session`);
+      return { success: true, user: response.data.user };
+    } catch (error) {
+      return { success: false, error: 'No active session' };
     }
-
-    const company = db.companies.create({ name: companyName });
-    const user = db.users.create({ 
-      email, 
-      password, // In real app, hash this!
-      companyId: company.id,
-      role: 'admin',
-      name: email.split('@')[0]
-    });
-
-    db.logs.add(user.id, 'ACCOUNT_CREATED', { companyId: company.id });
-    
-    return { success: true, user };
   },
 
   /**
-   * Social Login (Mock)
+   * Refresh Token
    */
-  async socialLogin(provider, socialData) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const { email, name } = socialData;
-    const existingUser = db.users.find(email);
-    
-    if (existingUser) {
-      db.logs.add(existingUser.id, 'SOCIAL_LOGIN_SUCCESS', { provider });
-      return { success: true, user: existingUser, isNewUser: false };
+  async refreshToken() {
+    try {
+      await axios.post(`${API_URL}/refresh`);
+      return { success: true };
+    } catch (error) {
+      return { success: false };
     }
-    
-    // For new users via social, we need company info and confirmation
-    return { success: true, isNewUser: true, socialData: { email, name, provider } };
   },
 
   /**
-   * Complete Social Registration
+   * Logout
    */
-  async completeSocialSignup(socialData, companyName) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const { email, name, provider } = socialData;
-    const company = db.companies.create({ name: companyName });
-    const user = db.users.create({ 
-      email, 
-      name,
-      companyId: company.id,
-      role: 'admin',
-      provider: provider,
-      authMethod: 'social'
-    });
+  async logout() {
+    try {
+      await axios.post(`${API_URL}/logout`);
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      return { success: false };
+    }
+  },
 
-    db.logs.add(user.id, 'SOCIAL_ACCOUNT_CREATED', { companyId: company.id, provider });
-    
-    return { success: true, user };
+  /**
+   * PKCE Helper: Generate Code Verifier and Challenge
+   */
+  async generatePKCE() {
+    const encoder = new TextEncoder();
+    const data = crypto.getRandomValues(new Uint8Array(32));
+    const codeVerifier = btoa(String.fromCharCode(...data))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    const buffer = await crypto.subtle.digest('SHA-256', encoder.encode(codeVerifier));
+    const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    return { codeVerifier, codeChallenge };
+  },
+
+  /**
+   * CSRF Helper: Generate State
+   */
+  generateState() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 };

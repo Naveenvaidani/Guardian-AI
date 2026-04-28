@@ -3,6 +3,7 @@ import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import LandingPage from './pages/LandingPage';
 import AboutPage from './pages/AboutPage';
+import LoginPage from './pages/LoginPage';
 import Settings from './components/dashboard/Settings';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
@@ -208,6 +209,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/settings/*" element={
             <ProtectedRoute>
               <Settings />
