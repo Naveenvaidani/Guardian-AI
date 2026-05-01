@@ -178,6 +178,67 @@ exports.appleCallback = async (req, res) => {
   }
 };
 
+exports.identify = async (req, res) => {
+  const { email } = req.body;
+  const user = User.findByEmail(email);
+  res.json({ exists: !!user });
+};
+
+exports.verifyCredentials = async (req, res) => {
+  const { email, password } = req.body;
+  const user = User.findByEmail(email);
+
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  // MOCK PASSWORD CHECK: In production, use bcrypt.compare()
+  // For this demo, we accept any password or check a 'password' field if it exists
+  if (user.password && user.password !== password) {
+    return res.status(401).json({ error: 'Invalid password' });
+  }
+
+  // Success - In a real app, this would trigger sending a 2FA code
+  res.json({ success: true, message: 'Credentials verified' });
+};
+
+exports.signup = async (req, res) => {
+  const { email, password, company } = req.body;
+  
+  if (User.findByEmail(email)) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
+
+  const user = User.create({
+    email,
+    password, // MOCK: Store plain for demo, use bcrypt in production
+    company,
+    name: email.split('@')[0],
+    provider: 'enterprise'
+  });
+
+  res.json({ success: true, user });
+};
+
+exports.verify2FA = async (req, res) => {
+  const { email, code } = req.body;
+  const user = User.findByEmail(email);
+
+  if (!user) {
+    return res.status(401).json({ error: 'User not found' });
+  }
+
+  // MOCK 2FA CHECK: Accept any 6-digit code for demo
+  if (!/^\d{6}$/.test(code)) {
+    return res.status(400).json({ error: 'Invalid security code format' });
+  }
+
+  const tokens = generateTokens(user);
+  setSessionCookies(res, tokens);
+
+  res.json({ success: true, user });
+};
+
 exports.getSession = (req, res) => {
   res.json({ user: req.user });
 };

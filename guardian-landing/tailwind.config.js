@@ -18,10 +18,18 @@ export default {
           warning: '#EA580C',
           danger: '#DC2626',
         },
+        dashboard: {
+          bg: '#FFFFFF', // Guardian Background
+          card: '#F8FAFC', // Guardian Section
+          border: '#CBD5E1', // Guardian Border
+          accent: '#2563EB', // Guardian Blue
+          highlight: '#38BDF8', // Light blue highlight
+        },
       },
       boxShadow: {
         glow: '0 0 0 1px rgba(59,130,246,0.2), 0 18px 35px -16px rgba(34,211,238,0.4)',
-        card: '0 20px 35px -24px rgba(2,6,23,0.85)',
+        card: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+        'premium-glow': '0 0 20px rgba(59,130,246,0.1)',
       },
       backgroundImage: {
         'hero-grid':

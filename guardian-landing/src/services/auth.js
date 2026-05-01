@@ -97,6 +97,58 @@ export const authService = {
   },
 
   /**
+   * Identify User by Email
+   */
+  async identify(email) {
+    try {
+      const response = await axios.post(`${API_URL}/identify`, { email });
+      return { success: true, exists: response.data.exists };
+    } catch (error) {
+      console.error('Identify error:', error);
+      return { success: false, error: 'Failed to verify email' };
+    }
+  },
+
+  /**
+   * Verify Credentials (Email/Password)
+   */
+  async verifyCredentials(email, password) {
+    try {
+      const response = await axios.post(`${API_URL}/verify-credentials`, { email, password });
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: error.response?.data?.error || 'Login failed' };
+    }
+  },
+
+  /**
+   * Sign Up New User
+   */
+  async signUp(email, password, company) {
+    try {
+      const response = await axios.post(`${API_URL}/signup`, { email, password, company });
+      return { success: true };
+    } catch (error) {
+      console.error('Signup error:', error);
+      return { success: false, error: error.response?.data?.error || 'Signup failed' };
+    }
+  },
+
+  /**
+   * Verify 2FA Code
+   */
+  async verify2FA(email, code) {
+    try {
+      const response = await axios.post(`${API_URL}/verify-2fa`, { email, code });
+      return { success: true, user: response.data.user };
+    } catch (error) {
+      console.error('2FA error:', error);
+      return { success: false, error: error.response?.data?.error || 'Invalid security code' };
+    }
+  },
+
+  /**
    * PKCE Helper: Generate Code Verifier and Challenge
    */
   async generatePKCE() {

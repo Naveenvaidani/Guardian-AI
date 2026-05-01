@@ -12,7 +12,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: theme('colors.guardian.border') transparent;
+  scrollbar-color: #CBD5E1 transparent;
 }
 
 *::-webkit-scrollbar {
@@ -25,15 +25,32 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: theme('colors.guardian.border');
+  background: #CBD5E1;
   border-radius: 999px;
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid theme('colors.guardian.border');
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(203, 213, 225, 0.4);
   backdrop-filter: blur(12px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: theme('boxShadow.card');
+}
+
+.glass-card-dark {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(203, 213, 225, 0.4);
+  backdrop-filter: blur(16px);
+  box-shadow: theme('boxShadow.card');
+}
+
+.sidebar-active {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%);
+  border-left: 2px solid #2563EB;
+  @apply text-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.1)];
+}
+
+.dashboard-container {
+  @apply max-w-[1600px] mx-auto px-6 md:px-10 lg:px-12;
 }
 
 .section-padding {
@@ -46,4 +63,13 @@ body {
 
 .text-secondary {
   @apply text-guardian-secondary leading-relaxed;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
