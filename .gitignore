@@ -24,3 +24,7 @@ pnpm-debug.log*
 # OS
 Thumbs.db
 Desktop.ini
+
+# Exclude Dashboards folder
+Dashboard/
+

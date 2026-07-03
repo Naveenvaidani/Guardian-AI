@@ -19,8 +19,18 @@ const TermsAndConditions = lazy(() => import('./landing/pages/TermsAndConditions
 const DashboardLayout = lazy(() => import('./layout/DashboardLayout'));
 const Overview = lazy(() => import('./dashboard/pages/Overview'));
 const Moderation = lazy(() => import('./dashboard/pages/Moderation'));
+const ContentSafety = lazy(() => import('./dashboard/pages/content-safety/ContentSafety'));
+const DeepfakeDetection = lazy(() => import('./dashboard/pages/deepfake-detection/DeepfakeDetection'));
+const FraudDetection = lazy(() => import('./dashboard/pages/fraud-detection/FraudDetection'));
 const Settings = lazy(() => import('./dashboard/components/Settings'));
 const AuditLogsPanel = lazy(() => import('./dashboard/components/AuditLogsPanel'));
+const ResearchHub = lazy(() => import('./dashboard/pages/research-hub/ResearchHub'));
+const Threats = lazy(() => import('./dashboard/pages/Threats'));
+const MarketingStudio = lazy(() => import('./dashboard/pages/marketing-studio/MarketingStudio'));
+const AdsBrandsHub = lazy(() => import('./dashboard/pages/ads-brands/AdsBrandsHub'));
+const PolicyEnforcement = lazy(() => import('./dashboard/pages/policy-enforcement/PolicyEnforcement'));
+
+
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -83,8 +93,16 @@ export default function App() {
                 <Routes>
                   <Route index element={<Overview />} />
                   <Route path="moderation" element={<Moderation />} />
-                  <Route path="threats" element={<div className="p-12 text-center text-slate-500 font-bold">Threat Detection Module - Coming Soon</div>} />
-                  <Route path="analytics" element={<div className="p-12 text-center text-slate-500 font-bold">Deep Analytics Module - Coming Soon</div>} />
+                  <Route path="threats" element={<Threats />} />
+                  <Route path="content-safety" element={<ContentSafety />} />
+                  <Route path="deepfake-detection" element={<DeepfakeDetection />} />
+                  <Route path="fraud-detection" element={<FraudDetection />} />
+                  <Route path="deepfake" element={<Navigate to="/dashboard/deepfake-detection" replace />} />
+                  <Route path="fraud" element={<Navigate to="/dashboard/fraud-detection" replace />} />
+                  <Route path="marketing-studio" element={<MarketingStudio />} />
+                  <Route path="ads-brands" element={<AdsBrandsHub />} />
+                  <Route path="policy-enforcement" element={<PolicyEnforcement />} />
+                  <Route path="research" element={<ResearchHub />} />
                   <Route path="settings/*" element={
                     <Settings 
                       isAuditPanelOpenExternal={isAuditPanelOpen} 

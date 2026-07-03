@@ -1,11 +1,12 @@
 import React from 'react';
 import { 
-  LayoutDashboard, Shield, AlertTriangle, BarChart3, Settings, 
-  ChevronLeft, ChevronRight, LogOut, User, Sparkles, ShieldCheck, History
+  LayoutDashboard, Shield, AlertTriangle, Settings, 
+  ChevronLeft, ChevronRight, LogOut, User, ShieldCheck, Sparkles, History, Search,
+  Megaphone, Globe, Lock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-
+ 
 export default function Sidebar({ isCollapsed, setIsCollapsed }) {
   const location = useLocation();
   
@@ -13,7 +14,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
     { id: 'moderation', label: 'Moderation', icon: Shield, path: '/dashboard/moderation' },
     { id: 'threats', label: 'Threat Detection', icon: AlertTriangle, path: '/dashboard/threats' },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+    { id: 'content-safety', label: 'Content Safety', icon: ShieldCheck, path: '/dashboard/content-safety' },
+    { id: 'deepfake', label: 'Deepfake Detection', icon: Sparkles, path: '/dashboard/deepfake-detection' },
+    { id: 'fraud', label: 'Fraud Detection', icon: History, path: '/dashboard/fraud-detection' },
+    { id: 'marketing-studio', label: 'Marketing Studio', icon: Megaphone, path: '/dashboard/marketing-studio' },
+    { id: 'ads-brands', label: 'Ads & Brands Hub', icon: Globe, path: '/dashboard/ads-brands' },
+    { id: 'policy-enforcement', label: 'Policy Enforcement', icon: Lock, path: '/dashboard/policy-enforcement' },
+    { id: 'research', label: 'Research & Analytics Hub', icon: Search, path: '/dashboard/research' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/dashboard/settings' },
   ];
 
@@ -81,21 +88,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           );
         })}
 
-        {/* Recent Activity Label */}
-        {!isCollapsed && (
-          <div className="mt-8 px-4">
-            <p className="text-[10px] font-black text-guardian-secondary uppercase tracking-widest mb-4">Recent Intelligence</p>
-            <div className="space-y-1">
-              {[
-                'Scan A-102', 'Policy EU-8', 'Threat LOG_3', 'Audit Export'
-              ].map((history, i) => (
-                <button key={i} className="w-full flex items-center justify-between py-2 text-xs text-guardian-secondary hover:text-guardian-blue hover:bg-guardian-section/50 rounded-lg transition-all text-left truncate group">
-                  <span className="truncate">{history}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* User Section */}
@@ -106,7 +98,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           </div>
           {!isCollapsed && (
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-bold text-guardian-heading truncate leading-none">Sarah Chen</p>
+              <p className="text-sm font-bold text-guardian-heading truncate leading-none">Admin</p>
               <p className="text-[10px] text-guardian-secondary font-medium truncate mt-1">Admin</p>
             </div>
           )}

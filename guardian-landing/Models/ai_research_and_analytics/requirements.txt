@@ -1,0 +1,50 @@
+# ──────────────────────────────────────────────
+# Guardian AI – Research & Analytics
+# Install with: pip install -r requirements.txt
+# Tested on Python 3.10+
+# ──────────────────────────────────────────────
+
+# REST API server
+fastapi>=0.111
+uvicorn[standard]>=0.29
+pydantic>=2.7
+
+# Core numerical / data
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+
+# Deep learning (orchestrator + models 1–5)
+torch>=2.1
+torchvision>=0.16
+
+# Hugging Face (models 1, 2, 6)
+transformers>=4.38
+Pillow>=10.0
+requests>=2.31
+
+# Vector search (model 1)
+faiss-cpu>=1.7.4
+
+# Clustering (model 2)
+hdbscan>=0.8.33
+
+# Temporal forecasting (model 4)
+# NOTE: pytorch-forecasting requires torch to already be installed
+pytorch-forecasting>=1.0
+pytorch-lightning>=2.1
+
+# Graph neural networks (model 5)
+# NOTE: torch-geometric install depends on your CUDA/CPU version.
+# See: https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html
+torch-geometric>=2.4
+
+# RAG pipeline (model 6)
+langchain>=0.2
+langchain-community>=0.2
+langchain-core>=0.2
+langchain-text-splitters>=0.2
+sentence-transformers>=2.7
+
+# Explainability (optional – used conceptually in model 6)
+shap>=0.44

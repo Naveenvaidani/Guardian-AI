@@ -25,6 +25,13 @@ export default {
           accent: '#2563EB', // Guardian Blue
           highlight: '#38BDF8', // Light blue highlight
         },
+        fraud: {
+          navy: '#0F172A',
+          cyan: '#06B6D4',
+          text: '#E2E8F0',
+          muted: '#94A3B8',
+          border: 'rgba(6, 182, 212, 0.2)', // Cyan transparent border for glowing effect
+        },
       },
       boxShadow: {
         glow: '0 0 0 1px rgba(59,130,246,0.2), 0 18px 35px -16px rgba(34,211,238,0.4)',

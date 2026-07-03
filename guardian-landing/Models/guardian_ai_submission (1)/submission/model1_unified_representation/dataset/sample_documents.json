@@ -1,0 +1,9 @@
+{
+  "documents": [
+    "This is a document about dogs.",
+    "This article covers cats.",
+    "Quantum physics is complex.",
+    "A guide to training your puppy."
+  ],
+  "note": "Small representative text corpus used to demo the BERT embedding + FAISS search path. CLIP path is demoed with a sample image URL inside inference.py."
+}

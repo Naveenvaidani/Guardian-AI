@@ -35,7 +35,7 @@ export default function ProfileSection() {
               <label className="text-xs font-black text-guardian-secondary uppercase tracking-widest ml-1">Full Name</label>
               <input 
                 type="text" 
-                defaultValue="Sarah Chen"
+                defaultValue="Admin"
                 className="w-full bg-guardian-bg border border-guardian-border rounded-2xl px-6 py-4 text-base font-medium text-guardian-heading focus:outline-none focus:border-dashboard-accent/50 focus:ring-4 focus:ring-dashboard-accent/5 transition-all"
               />
             </div>
@@ -44,7 +44,7 @@ export default function ProfileSection() {
               <div className="relative">
                 <input 
                   type="email" 
-                  defaultValue="sarah.c@guardian.ai"
+                  defaultValue="admin@guardian.ai"
                   className="w-full bg-guardian-bg border border-guardian-border rounded-2xl px-6 py-4 text-base font-medium text-guardian-heading focus:outline-none focus:border-dashboard-accent/50 focus:ring-4 focus:ring-dashboard-accent/5 transition-all pr-28"
                 />
                 <button 

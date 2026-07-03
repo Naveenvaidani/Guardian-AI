@@ -1,0 +1,15 @@
+{
+  "documents": [
+    "Just saw the new space movie, it was incredible!",
+    "The rocket launch was a success! To the moon!",
+    "My cat is stuck in a tree, help!",
+    "I'm training for a marathon next month.",
+    "The new sci-fi film about space travel is a must-see.",
+    "What's the best food for my new kitten?",
+    "Running 10 miles today. Marathon prep is hard.",
+    "Another successful launch for the Artemis program.",
+    "My dog just learned a new trick.",
+    "I love watching my cat play with a laser."
+  ],
+  "note": "Small representative social-post corpus used to demo clustering + summarization."
+}

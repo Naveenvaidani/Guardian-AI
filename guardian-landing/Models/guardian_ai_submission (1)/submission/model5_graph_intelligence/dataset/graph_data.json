@@ -1,0 +1,87 @@
+{
+  "x": [
+    [
+      1.0,
+      365.0
+    ],
+    [
+      0.0,
+      10.0
+    ],
+    [
+      0.0,
+      5.0
+    ],
+    [
+      1.0,
+      730.0
+    ],
+    [
+      0.0,
+      20.0
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      1.0,
+      2.0
+    ],
+    [
+      0.0,
+      2.0
+    ]
+  ],
+  "edge_index": [
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      6,
+      6,
+      7,
+      5,
+      7
+    ],
+    [
+      5,
+      6,
+      6,
+      7,
+      5,
+      7,
+      0,
+      1,
+      2,
+      3,
+      4,
+      4
+    ]
+  ],
+  "y": [
+    0,
+    1,
+    1,
+    0,
+    0,
+    -1,
+    -1,
+    -1
+  ],
+  "train_mask": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false
+  ],
+  "node_description": "Nodes 0-4 = users [is_verified, account_age_days], Nodes 5-7 = content [is_flagged, report_count]"
+}

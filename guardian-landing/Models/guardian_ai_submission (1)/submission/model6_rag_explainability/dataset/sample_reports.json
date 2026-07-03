@@ -1,0 +1,8 @@
+{
+  "reports": [
+    "Q3 Report: Moderation load increased by 15% due to a spike in spam activity in the 'news' category. We recommend increasing resources.",
+    "Ad Performance, Week 4: Click-through-rate (CTR) on video ads dropped by 5%. Investigation shows low engagement from users aged 18-25.",
+    "Policy Update, Oct 1st: A new rule was implemented to detect coordinated inauthentic behavior. This led to a 30% increase in bot account suspensions."
+  ],
+  "note": "Sample internal reports used to demo the RAG retrieval + QA path."
+}
