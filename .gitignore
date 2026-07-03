@@ -26,5 +26,6 @@ Thumbs.db
 Desktop.ini
 
 # Exclude Dashboards folder
-Dashboard/
+/Dashboard/
+
 
